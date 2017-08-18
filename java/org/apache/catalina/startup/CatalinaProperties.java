@@ -40,7 +40,7 @@ public class CatalinaProperties {
     private static Properties properties = null;
 
 
-    static {
+    static {// 使用该类时加载
         loadProperties();
     }
 
@@ -63,6 +63,7 @@ public class CatalinaProperties {
         String fileName = "catalina.properties";
 
         try {
+            //初始为空
             String configUrl = System.getProperty("catalina.config");
             if (configUrl != null) {
                 if (configUrl.indexOf('/') == -1) {
@@ -75,11 +76,13 @@ public class CatalinaProperties {
         } catch (Throwable t) {
             handleThrowable(t);
         }
-
+        // configUrl == null 时 is =null
         if (is == null) {
             try {
                 File home = new File(Bootstrap.getCatalinaBase());
+                //项目 conf 路径
                 File conf = new File(home, "conf");
+                // ☞ 向 catalina.properties 文件
                 File propsFile = new File(conf, fileName);
                 is = new FileInputStream(propsFile);
             } catch (Throwable t) {
@@ -99,6 +102,7 @@ public class CatalinaProperties {
         if (is != null) {
             try {
                 properties = new Properties();
+                // 加载键值对
                 properties.load(is);
             } catch (Throwable t) {
                 handleThrowable(t);
@@ -125,6 +129,7 @@ public class CatalinaProperties {
             String name = (String) enumeration.nextElement();
             String value = properties.getProperty(name);
             if (value != null) {
+                // 设置为 项目 系统变量
                 System.setProperty(name, value);
             }
         }

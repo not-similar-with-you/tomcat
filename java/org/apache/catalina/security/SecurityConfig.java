@@ -33,7 +33,7 @@ public final class SecurityConfig{
     private static final Log log = LogFactory.getLog(SecurityConfig.class);
 
 
-    private static final String PACKAGE_ACCESS =  "sun.,"
+    private static final String PACKAGE_ACCESS =  "sun.,"// 对应 catalina.properties 中 package.access 访问属性
                                                 + "org.apache.catalina."
                                                 + ",org.apache.jasper."
                                                 + ",org.apache.coyote."
@@ -64,7 +64,7 @@ public final class SecurityConfig{
     private SecurityConfig() {
         String definition = null;
         String access = null;
-        try{
+        try{// 读取 2 个属性值
             definition = CatalinaProperties.getProperty("package.definition");
             access = CatalinaProperties.getProperty("package.access");
         } catch (java.lang.Exception ex){
@@ -110,7 +110,7 @@ public final class SecurityConfig{
         // If catalina.properties is missing, protect all by default.
          if (packageDefinition == null){
             setSecurityProperty("package.definition", PACKAGE_DEFINITION);
-         } else {
+         } else {// 使用 catalina.properties 中 定义 的值
             setSecurityProperty("package.definition", packageDefinition);
          }
     }

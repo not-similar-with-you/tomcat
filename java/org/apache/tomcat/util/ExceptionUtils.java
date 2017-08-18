@@ -60,6 +60,7 @@ public class ExceptionUtils {
 
 
     /**
+     * 由于该类被广泛地用于错误处理，因此谨慎的是预加载它，以避免在错误处理期间加载该类掩盖真实问题的任何失败。
      * NO-OP method provided to enable simple pre-loading of this class. Since
      * the class is used extensively in error handling, it is prudent to
      * pre-load it to avoid any failure to load this class masking the true

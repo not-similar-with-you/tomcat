@@ -62,7 +62,7 @@ public final class Bootstrap {
     private static final Pattern PATH_PATTERN = Pattern.compile("(\".*?\")|(([^,])*)");
 
     static {
-        // Will always be non-null
+        // Will always be non-null 项目路径
         String userDir = System.getProperty("user.dir");
 
         // Home first
@@ -80,7 +80,7 @@ public final class Bootstrap {
 
         if (homeFile == null) {
             // First fall-back. See if current directory is a bin directory
-            // in a normal Tomcat install
+            // in a normal Tomcat install 初始文件不存在
             File bootstrapJar = new File(userDir, "bootstrap.jar");
 
             if (bootstrapJar.exists()) {
@@ -97,7 +97,7 @@ public final class Bootstrap {
             // Second fall-back. Use current directory
             File f = new File(userDir);
             try {
-                homeFile = f.getCanonicalFile();
+                homeFile = f.getCanonicalFile(); //抽象路径名的规范路径名字符串
             } catch (IOException ioe) {
                 homeFile = f.getAbsoluteFile();
             }
@@ -105,11 +105,11 @@ public final class Bootstrap {
 
         catalinaHomeFile = homeFile;
         System.setProperty(
-                Globals.CATALINA_HOME_PROP, catalinaHomeFile.getPath());
+                Globals.CATALINA_HOME_PROP, catalinaHomeFile.getPath());// 设置 catalina.home
 
         // Then base
         String base = System.getProperty(Globals.CATALINA_BASE_PROP);
-        if (base == null) {
+        if (base == null) { // catalina.base = catalina.home
             catalinaBaseFile = catalinaHomeFile;
         } else {
             File baseFile = new File(base);
@@ -148,6 +148,7 @@ public final class Bootstrap {
                 // no config file, default to this loader - we might be in a 'single' env.
                 commonLoader=this.getClass().getClassLoader();
             }
+            // server.loader (catalinaLoader)， share.loader未配置 使用 commonLoader 加载器
             catalinaLoader = createClassLoader("server", commonLoader);
             sharedLoader = createClassLoader("shared", commonLoader);
         } catch (Throwable t) {
@@ -160,9 +161,9 @@ public final class Bootstrap {
 
     private ClassLoader createClassLoader(String name, ClassLoader parent)
         throws Exception {
-
+        // name.loader  值
         String value = CatalinaProperties.getProperty(name + ".loader");
-        if ((value == null) || (value.equals("")))
+        if ((value == null) || (value.equals("")))// 属性文件 中为空 直接返回
             return parent;
 
         value = replace(value);
@@ -185,19 +186,19 @@ public final class Bootstrap {
 
             // Local repository
             if (repository.endsWith("*.jar")) {
-                repository = repository.substring
+                repository = repository.substring //F:\ideaSpace\tomcat/lib/*.jar 去除 *.jar 字符串路径
                     (0, repository.length() - "*.jar".length());
                 repositories.add(
                         new Repository(repository, RepositoryType.GLOB));
             } else if (repository.endsWith(".jar")) {
                 repositories.add(
                         new Repository(repository, RepositoryType.JAR));
-            } else {
+            } else {//增加为 文件夹 路径
                 repositories.add(
                         new Repository(repository, RepositoryType.DIR));
             }
         }
-
+        //返回 urlClassLoader 加载器
         return ClassLoaderFactory.createClassLoader(repositories, parent);
     }
 
@@ -208,28 +209,28 @@ public final class Bootstrap {
      * @param str The original string
      * @return the modified string
      */
-    protected String replace(String str) {
+    protected String replace(String str) {// 替换 ${ } 中的内容为 路径
         // Implementation is copied from ClassLoaderLogManager.replace(),
         // but added special processing for catalina.home and catalina.base.
         String result = str;
-        int pos_start = str.indexOf("${");
-        if (pos_start >= 0) {
+        int pos_start = str.indexOf("${");// ${ 的索引位置
+        if (pos_start >= 0) {// 存在 ${ 时
             StringBuilder builder = new StringBuilder();
             int pos_end = -1;
             while (pos_start >= 0) {
-                builder.append(str, pos_end + 1, pos_start);
-                pos_end = str.indexOf('}', pos_start + 2);
-                if (pos_end < 0) {
+                builder.append(str, pos_end + 1, pos_start);//"${catalina.base}/lib","${catalina.base}/lib/*.jar","${catalina.home}/lib","${catalina.home}/lib/*.jar" 第二次时截取前一个 } 与 ${ 之间的字符串 /lib","";
+                pos_end = str.indexOf('}', pos_start + 2); // 从 ${ 之后开始 } 的位置
+                if (pos_end < 0) {// 找不到 }
                     pos_end = pos_start - 1;
                     break;
                 }
-                String propName = str.substring(pos_start + 2, pos_end);
+                String propName = str.substring(pos_start + 2, pos_end);// 截取 ${   } 之间的变量名称
                 String replacement;
                 if (propName.length() == 0) {
                     replacement = null;
-                } else if (Globals.CATALINA_HOME_PROP.equals(propName)) {
+                } else if (Globals.CATALINA_HOME_PROP.equals(propName)) { // catalina.home
                     replacement = getCatalinaHome();
-                } else if (Globals.CATALINA_BASE_PROP.equals(propName)) {
+                } else if (Globals.CATALINA_BASE_PROP.equals(propName)) {// catalina.base
                     replacement = getCatalinaBase();
                 } else {
                     replacement = System.getProperty(propName);
@@ -239,8 +240,8 @@ public final class Bootstrap {
                 } else {
                     builder.append(str, pos_start, pos_end + 1);
                 }
-                pos_start = str.indexOf("${", pos_end + 1);
-            }
+                pos_start = str.indexOf("${", pos_end + 1);// 下一个 ${ 的位置 找不到跳出循环
+            }//拼接最后一部分字符串
             builder.append(str, pos_end + 1, str.length());
             result = builder.toString();
         }
@@ -263,6 +264,7 @@ public final class Bootstrap {
         // Load our startup class and call its process() method
         if (log.isDebugEnabled())
             log.debug("Loading startup class");
+        // urlClassLoader loadClass 使用默认 classLoader 原 loadClass 方法 不进行 链接 ，初始化（执行static 块代码 参数--因编译成字节码 实际只执行 static 块代码）
         Class<?> startupClass =
             catalinaLoader.loadClass
             ("org.apache.catalina.startup.Catalina");
@@ -273,13 +275,16 @@ public final class Bootstrap {
             log.debug("Setting startup class properties");
         String methodName = "setParentClassLoader";
         Class<?> paramTypes[] = new Class[1];
+        //加载ClassLoader 类， 链接，初始化
         paramTypes[0] = Class.forName("java.lang.ClassLoader");
         Object paramValues[] = new Object[1];
         paramValues[0] = sharedLoader;
+        // 获取 Catalina setParentClassLoader 方法对象
         Method method =
             startupInstance.getClass().getMethod(methodName, paramTypes);
+        // 调用 setParentClassLoader 参数为 urlClassLoader
         method.invoke(startupInstance, paramValues);
-
+        //指向 Catalina 类
         catalinaDaemon = startupInstance;
 
     }
@@ -295,7 +300,7 @@ public final class Bootstrap {
         String methodName = "load";
         Object param[];
         Class<?> paramTypes[];
-        if (arguments==null || arguments.length==0) {
+        if (arguments==null || arguments.length==0) {// 未输入命令行参数
             paramTypes = null;
             param = null;
         } else {
@@ -422,7 +427,7 @@ public final class Bootstrap {
         paramTypes[0] = Boolean.TYPE;
         Object paramValues[] = new Object[1];
         paramValues[0] = Boolean.valueOf(await);
-        Method method =
+        Method method = // catalina 类对象 中的 setAwait(boolean b) 方法，并调用方法
             catalinaDaemon.getClass().getMethod("setAwait", paramTypes);
         method.invoke(catalinaDaemon, paramValues);
 
@@ -588,9 +593,9 @@ public final class Bootstrap {
 
             char first = path.charAt(0);
             char last = path.charAt(path.length() - 1);
-
+            // 字符串在引号中 长度 大于 0
             if (first == '"' && last == '"' && path.length() > 1) {
-                path = path.substring(1, path.length() - 1);
+                path = path.substring(1, path.length() - 1);// 去除引号
                 path = path.trim();
                 if (path.length() == 0) {
                     continue;

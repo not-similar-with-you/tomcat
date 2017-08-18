@@ -126,7 +126,7 @@ public class Catalina {
 
     public Catalina() {
         setSecurityProtection();
-        ExceptionUtils.preload();
+        ExceptionUtils.preload();// 啥都没干 ╮(╯▽╰)╭
     }
 
 
@@ -504,7 +504,7 @@ public class Catalina {
      */
     public void load() {
 
-        long t1 = System.nanoTime();
+        long t1 = System.nanoTime();// 获取一个时间
 
         initDirs();
 
@@ -762,7 +762,7 @@ public class Catalina {
 
 
     protected void initDirs() {
-        String temp = System.getProperty("java.io.tmpdir");
+        String temp = System.getProperty("java.io.tmpdir");//默认的临时文件路径 C:\Users\ADMINI~1\AppData\Local\Temp\
         if (temp == null || (!(new File(temp)).isDirectory())) {
             log.error(sm.getString("embedded.notmp", temp));
         }
