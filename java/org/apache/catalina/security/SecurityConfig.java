@@ -78,7 +78,7 @@ public final class SecurityConfig{
     }
 
 
-    /**
+    /**生成实例，读取配置文件2个属性
      * Returns the singleton instance of that class.
      * @return an instance of that class.
      */
@@ -107,7 +107,7 @@ public final class SecurityConfig{
      * Set the security package.definition value.
      */
      public void setPackageDefinition(){
-        // If catalina.properties is missing, protect all by default.
+        // If catalina.properties is missing, protect all by default.属性文件中没有设置对应的属性，== null ，使用当前文件中定义的属性
          if (packageDefinition == null){
             setSecurityProperty("package.definition", PACKAGE_DEFINITION);
          } else {// 使用 catalina.properties 中 定义 的值
@@ -121,7 +121,7 @@ public final class SecurityConfig{
      * @param properties the package.* property.
      */
     private final void setSecurityProperty(String properties, String packageList){
-        if (System.getSecurityManager() != null){
+        if (System.getSecurityManager() != null){// false
             String definition = Security.getProperty(properties);
             if( definition != null && definition.length() > 0 ){
                 if (packageList.length() > 0) {

@@ -267,8 +267,8 @@ public final class Bootstrap {
         // urlClassLoader loadClass 使用默认 classLoader 原 loadClass 方法 不进行 链接 ，初始化（执行static 块代码 参数--因编译成字节码 实际只执行 static 块代码）
         Class<?> startupClass =
             catalinaLoader.loadClass
-            ("org.apache.catalina.startup.Catalina");
-        Object startupInstance = startupClass.newInstance();
+            ("org.apache.catalina.startup.Catalina");//实际使用应用程序类加载器（双亲委派模型）
+        Object startupInstance = startupClass.newInstance();// 实例化 Catalina 调用 Catalina 构造方法
 
         // Set the shared extensions class loader
         if (log.isDebugEnabled())
@@ -300,7 +300,7 @@ public final class Bootstrap {
         String methodName = "load";
         Object param[];
         Class<?> paramTypes[];
-        if (arguments==null || arguments.length==0) {// 未输入命令行参数
+        if (arguments==null || arguments.length==0) {// 未输入命令行参数 下面调用 Catalina load 无参数的方法
             paramTypes = null;
             param = null;
         } else {
@@ -416,7 +416,7 @@ public final class Bootstrap {
 
 
     /**
-     * Set flag.
+     * Set flag. 实际 调用 catalina 中的 setAwait 方法设置为 true
      * @param await <code>true</code> if the daemon should block
      * @throws Exception Reflection error
      */

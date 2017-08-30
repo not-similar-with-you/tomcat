@@ -271,8 +271,8 @@ public class Catalina {
         long t1=System.currentTimeMillis();
         // Initialize the digester
         Digester digester = new Digester();
-        digester.setValidating(false);
-        digester.setRulesValidation(true);
+        digester.setValidating(false);// 设置为false表示解析xml时不需要进行DTD的规则校验
+        digester.setRulesValidation(true); // 是否进行节点设置规则校验,如果xml中相应节点没有设置解析规则会在控制台显示提示信息
         Map<Class<?>, List<String>> fakeAttributes = new HashMap<>();
         List<String> attrs = new ArrayList<>();
         attrs.add("className");
@@ -283,34 +283,34 @@ public class Catalina {
         // Configure the actions we will be using
         digester.addObjectCreate("Server",
                                  "org.apache.catalina.core.StandardServer",
-                                 "className");
-        digester.addSetProperties("Server");
+                                 "className"); // addObjectCreate方法的意思是碰到xml文件中的Server节点则创建一个StandardServer对象
+        digester.addSetProperties("Server"); // 根据Server节点中的属性信息调用相应属性的setter方法，以上面的xml文件为例则会调用setPort、setShutdown方法，入参分别是8005、SHUTDOWN
         digester.addSetNext("Server",
                             "setServer",
-                            "org.apache.catalina.Server");
+                            "org.apache.catalina.Server");// 将Server节点对应的对象作为入参调用栈顶对象的setServer方法，这里的栈顶对象即下面的digester.push方法所设置的当前类的对象this，就是说调用Catalina类的setServer方法
 
         digester.addObjectCreate("Server/GlobalNamingResources",
-                                 "org.apache.catalina.deploy.NamingResourcesImpl");
+                                 "org.apache.catalina.deploy.NamingResourcesImpl");//碰到xml文件中的Server节点下的GlobalNamingResources节点则创建一个NamingResourcesImpl对象
         digester.addSetProperties("Server/GlobalNamingResources");
         digester.addSetNext("Server/GlobalNamingResources",
                             "setGlobalNamingResources",
-                            "org.apache.catalina.deploy.NamingResourcesImpl");
-
+                            "org.apache.catalina.deploy.NamingResourcesImpl");//调用 StandardServer 中 setGlobalNamingResources
+        // 没有Server/GlobalNamingResources/Resource  ???
         digester.addObjectCreate("Server/Listener",
                                  null, // MUST be specified in the element
-                                 "className");
+                                 "className");// listener 中指定类 创建对象
         digester.addSetProperties("Server/Listener");
         digester.addSetNext("Server/Listener",
                             "addLifecycleListener",
-                            "org.apache.catalina.LifecycleListener");
+                            "org.apache.catalina.LifecycleListener");//调用 StandardServer 中 addLifecycleListener 实际为LifecycleBase父类中的 addLifecycleListener
 
         digester.addObjectCreate("Server/Service",
                                  "org.apache.catalina.core.StandardService",
-                                 "className");
-        digester.addSetProperties("Server/Service");
+                                 "className");// server节点下的 service 中指定类 创建对象 未指定使用class 属性 时 创建StandardService对象
+        digester.addSetProperties("Server/Service");//StandardService  设置对应的属性
         digester.addSetNext("Server/Service",
                             "addService",
-                            "org.apache.catalina.Service");
+                            "org.apache.catalina.Service");//调用 StandardServer 中 addService
 
         digester.addObjectCreate("Server/Service/Listener",
                                  null, // MUST be specified in the element
@@ -323,12 +323,12 @@ public class Catalina {
         //Executor
         digester.addObjectCreate("Server/Service/Executor",
                          "org.apache.catalina.core.StandardThreadExecutor",
-                         "className");
-        digester.addSetProperties("Server/Service/Executor");
+                         "className");// server节点下的 service 节点下Executor 中指定类 创建对象 未指定使用class 属性 时 创建 StandardThreadExecutor 对象
+        digester.addSetProperties("Server/Service/Executor");// StandardThreadExecutor 设置属性值
 
         digester.addSetNext("Server/Service/Executor",
                             "addExecutor",
-                            "org.apache.catalina.Executor");
+                            "org.apache.catalina.Executor");// 调用 Service 中 addExecutor() 方法
 
 
         digester.addRule("Server/Service/Connector",
@@ -372,9 +372,9 @@ public class Catalina {
 
         // Add RuleSets for nested elements
         digester.addRuleSet(new NamingRuleSet("Server/GlobalNamingResources/"));
-        digester.addRuleSet(new EngineRuleSet("Server/Service/"));
-        digester.addRuleSet(new HostRuleSet("Server/Service/Engine/"));
-        digester.addRuleSet(new ContextRuleSet("Server/Service/Engine/Host/"));
+        digester.addRuleSet(new EngineRuleSet("Server/Service/"));// service/engine 和 engine 下的节点
+        digester.addRuleSet(new HostRuleSet("Server/Service/Engine/"));// engine/host 和 host 下的部分节点
+        digester.addRuleSet(new ContextRuleSet("Server/Service/Engine/Host/")); // engine/host   下的部分节点
         addClusterRuleSet(digester, "Server/Service/Engine/Host/Cluster/");
         digester.addRuleSet(new NamingRuleSet("Server/Service/Engine/Host/Context/"));
 
@@ -519,7 +519,7 @@ public class Catalina {
         File file = null;
         try {
             try {
-                file = configFile();
+                file = configFile(); //加载conf/server.xml配置文件
                 inputStream = new FileInputStream(file);
                 inputSource = new InputSource(file.toURI().toURL().toString());
             } catch (Exception e) {
@@ -601,10 +601,10 @@ public class Catalina {
         getServer().setCatalinaBase(Bootstrap.getCatalinaBaseFile());
 
         // Stream redirection
-        initStreams();
+        initStreams(); //设置输出流设备
 
         // Start the new server
-        try {
+        try {//启动新server
             getServer().init();
         } catch (LifecycleException e) {
             if (Boolean.getBoolean("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE")) {
@@ -760,10 +760,12 @@ public class Catalina {
 
     }
 
-
+    /**
+     * 临时目录检查
+     */
     protected void initDirs() {
         String temp = System.getProperty("java.io.tmpdir");//默认的临时文件路径 C:\Users\ADMINI~1\AppData\Local\Temp\
-        if (temp == null || (!(new File(temp)).isDirectory())) {
+        if (temp == null || (!(new File(temp)).isDirectory())) {// 临时目录不存在 ，或 临时目录不是是个目录
             log.error(sm.getString("embedded.notmp", temp));
         }
     }
@@ -776,6 +778,12 @@ public class Catalina {
     }
 
 
+
+    /**
+     * 设置catalina.useNaming ||（java.naming.factory.url.pkgs && java.naming.factory.initial）
+     * 在创建JNDI上下文时，使用Context.INITIAL_CONTEXT_FACTORY（"java.naming.factory.initial"）属性，
+     * 来指定创建JNDI上下文的工厂类；Context.URL_PKG_PREFIXES("java.naming.factory.url.pkgs")用在查询url中包括scheme方法id时创建对应的JNDI上下文
+     */
     protected void initNaming() {
         // Setting additional variables
         if (!useNaming) {
@@ -785,16 +793,16 @@ public class Catalina {
             System.setProperty("catalina.useNaming", "true");
             String value = "org.apache.naming";
             String oldValue =
-                System.getProperty(javax.naming.Context.URL_PKG_PREFIXES);
+                System.getProperty(javax.naming.Context.URL_PKG_PREFIXES);// null
             if (oldValue != null) {
                 value = value + ":" + oldValue;
             }
-            System.setProperty(javax.naming.Context.URL_PKG_PREFIXES, value);
+            System.setProperty(javax.naming.Context.URL_PKG_PREFIXES, value);// 设置为 org.apache.naming
             if( log.isDebugEnabled() ) {
                 log.debug("Setting naming prefix=" + value);
             }
             value = System.getProperty
-                (javax.naming.Context.INITIAL_CONTEXT_FACTORY);
+                (javax.naming.Context.INITIAL_CONTEXT_FACTORY);// null
             if (value == null) {
                 System.setProperty
                     (javax.naming.Context.INITIAL_CONTEXT_FACTORY,

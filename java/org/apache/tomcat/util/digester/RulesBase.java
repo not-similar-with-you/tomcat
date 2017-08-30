@@ -149,12 +149,12 @@ public class RulesBase implements Rules {
         }
 
 
-        List<Rule> list = cache.get(pattern);
-        if (list == null) {
+        List<Rule> list = cache.get(pattern);// 初始时 pattern 为对应 相应的rule list ，list == null 再试用相同的pattern时，list != null
+        if (list == null) {// 第一次 pattern 时 执行
             list = new ArrayList<>();
-            cache.put(pattern, list);
+            cache.put(pattern, list);// pattern 与 list对应关系
         }
-        list.add(rule);
+        list.add(rule);// list 中 增加 rule
         rules.add(rule);
         if (this.digester != null) {
             rule.setDigester(this.digester);

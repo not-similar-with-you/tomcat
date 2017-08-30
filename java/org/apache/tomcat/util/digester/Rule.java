@@ -71,7 +71,7 @@ public abstract class Rule {
     }
 
 
-    /**
+    /**获取Rule所在的相对命名空间URI；
      * Return the namespace URI for which this Rule is relevant, if any.
      *
      * @return The namespace URI for which this rule is relevant or
@@ -82,7 +82,7 @@ public abstract class Rule {
     }
 
 
-    /**
+    /**设置Rule所在的相对命名空间URI；
      * Set the namespace URI for which this Rule is relevant, if any.
      *
      * @param namespaceURI Namespace URI for which this Rule is relevant,
@@ -95,7 +95,7 @@ public abstract class Rule {
 
     // --------------------------------------------------------- Public Methods
 
-    /**
+    /**此方法在遇到一个匹配的XML元素的开头时被调用，默认实现为 什么都不做
      * This method is called when the beginning of a matching XML element
      * is encountered. The default implementation is a NO-OP.
      *
@@ -113,7 +113,7 @@ public abstract class Rule {
     }
 
 
-    /**
+    /**在遇到匹配XML元素的body时，此方法被调用。元素没有body 时，方法不被调用。默认实现为 什么都不做
      * This method is called when the body of a matching XML element is
      * encountered.  If the element has no body, this method is not called at
      * all. The default implementation is a NO-OP.
@@ -132,7 +132,7 @@ public abstract class Rule {
     }
 
 
-    /**
+    /**此方法在遇到一个匹配的XML元素的末尾时被调用。默认实现为 什么都不做
      * This method is called when the end of a matching XML element
      * is encountered. The default implementation is a NO-OP.
      *

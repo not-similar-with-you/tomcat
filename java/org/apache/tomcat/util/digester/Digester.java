@@ -83,7 +83,7 @@ public class Digester extends DefaultHandler2 {
     protected static IntrospectionUtils.PropertySource propertySource = null;
 
     static {
-        String className = System.getProperty("org.apache.tomcat.util.digester.PROPERTY_SOURCE");
+        String className = System.getProperty("org.apache.tomcat.util.digester.PROPERTY_SOURCE");//null
         if (className != null) {
             ClassLoader[] cls = new ClassLoader[] { Digester.class.getClassLoader(),
                     Thread.currentThread().getContextClassLoader() };
@@ -680,7 +680,7 @@ public class Digester extends DefaultHandler2 {
     }
 
 
-    /**
+    /**需要调用在 第1次使用parse （） 方法之前
      * Set the validating parser flag.  This must be called before
      * <code>parse()</code> is called the first time.
      *

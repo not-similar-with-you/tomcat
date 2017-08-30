@@ -32,7 +32,7 @@ public final class SecurityClassLoad {
 
     static void securityClassLoad(ClassLoader loader, boolean requireSecurityManager)
             throws Exception {
-
+        //开始时 System.getSecurityManager() 有值
         if (requireSecurityManager && System.getSecurityManager() == null) {
             return;
         }
