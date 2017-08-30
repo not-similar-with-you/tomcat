@@ -418,13 +418,13 @@ public class Digester extends DefaultHandler2 {
         if (factory == null) {
             factory = SAXParserFactory.newInstance();
 
-            factory.setNamespaceAware(namespaceAware);
+            factory.setNamespaceAware(namespaceAware);// 设为 false
             // Preserve xmlns attributes
             if (namespaceAware) {
                 factory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
             }
 
-            factory.setValidating(validating);
+            factory.setValidating(validating);//false
             if (validating) {
                 // Enable DTD validation
                 factory.setFeature("http://xml.org/sax/features/validation", true);
@@ -590,7 +590,7 @@ public class Digester extends DefaultHandler2 {
 
         // Create a new parser
         try {
-            parser = getFactory().newSAXParser();
+            parser = getFactory().newSAXParser();//获得 saxparser
         } catch (Exception e) {
             log.error("Digester.getParser: ", e);
             return null;
@@ -1074,7 +1074,7 @@ public class Digester extends DefaultHandler2 {
         }
 
         if (locator instanceof Locator2) {
-            if (root instanceof DocumentProperties.Charset) {
+            if (root instanceof DocumentProperties.Charset) {//!=
                 String enc = ((Locator2) locator).getEncoding();
                 if (enc != null) {
                     try {
@@ -1747,7 +1747,7 @@ public class Digester extends DefaultHandler2 {
 
 
     /**
-     * <p>
+     * <p> 懒加载 日志 对象
      * Provide a hook for lazy configuration of this <code>Digester</code>
      * instance.  The default implementation does nothing, but subclasses
      * can override as needed.
@@ -1900,7 +1900,7 @@ public class Digester extends DefaultHandler2 {
     // ------------------------------------------------------- Private Methods
 
 
-   /**
+   /** 更新原有对象的初始值
      * Returns an attributes list which contains all the attributes
      * passed in, with any text of form "${xxx}" in an attribute value
      * replaced by the appropriate value from the system property.
@@ -1914,7 +1914,7 @@ public class Digester extends DefaultHandler2 {
         AttributesImpl newAttrs = new AttributesImpl(list);
         int nAttributes = newAttrs.getLength();
         for (int i = 0; i < nAttributes; ++i) {
-            String value = newAttrs.getValue(i);
+            String value = newAttrs.getValue(i);// i*5+4 作为索引获取
             try {
                 String newValue = IntrospectionUtils.replaceProperties(value, null, source);
                 if (value != newValue) {

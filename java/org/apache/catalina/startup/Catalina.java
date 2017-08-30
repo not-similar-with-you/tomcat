@@ -256,7 +256,7 @@ public class Catalina {
 
         File file = new File(configFile);
         if (!file.isAbsolute()) {
-            file = new File(Bootstrap.getCatalinaBase(), configFile);
+            file = new File(Bootstrap.getCatalinaBase(), configFile);// 变成绝对路径
         }
         return file;
 
@@ -521,7 +521,7 @@ public class Catalina {
             try {
                 file = configFile(); //加载conf/server.xml配置文件
                 inputStream = new FileInputStream(file);
-                inputSource = new InputSource(file.toURI().toURL().toString());
+                inputSource = new InputSource(file.toURI().toURL().toString());// 传入 *\conf\server.xml
             } catch (Exception e) {
                 if (log.isDebugEnabled()) {
                     log.debug(sm.getString("catalina.configFail", file), e);
