@@ -85,18 +85,18 @@ public abstract class LifecycleMBeanBase extends LifecycleBase
     }
 
 
-    /**
+    /**查找 engine domain 找不到 使用默认 catalina 值
      * Obtain the domain under which this component will be / has been
      * registered.
      */
     @Override
     public final String getDomain() {
         if (domain == null) {
-            domain = getDomainInternal();
+            domain = getDomainInternal();// 调用子类 实现
         }
 
         if (domain == null) {
-            domain = Globals.DEFAULT_MBEAN_DOMAIN;
+            domain = Globals.DEFAULT_MBEAN_DOMAIN;// 默认设置为 Catalina
         }
 
         return domain;
@@ -151,7 +151,7 @@ public abstract class LifecycleMBeanBase extends LifecycleBase
         // Construct an object name with the right domain
         StringBuilder name = new StringBuilder(getDomain());
         name.append(':');
-        name.append(objectNameKeyProperties);
+        name.append(objectNameKeyProperties);// catalina:type=server
 
         ObjectName on = null;
 

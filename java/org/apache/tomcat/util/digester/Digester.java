@@ -345,7 +345,7 @@ public class Digester extends DefaultHandler2 {
             return this.classLoader;
         }
         if (this.useContextClassLoader) {
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();// 当前线程类加载器 ，bootstrap init 中设定过
             if (classLoader != null) {
                 return classLoader;
             }
@@ -761,8 +761,8 @@ public class Digester extends DefaultHandler2 {
      * @exception SAXException if no XMLReader can be instantiated
      */
     public XMLReader getXMLReader() throws SAXException {
-        if (reader == null) {
-            reader = getParser().getXMLReader();
+        if (reader == null) {// reader 初始 为 null
+            reader = getParser().getXMLReader();// saxparser 中的 xmlReader 对象
         }
 
         reader.setDTDHandler(this);
@@ -844,7 +844,7 @@ public class Digester extends DefaultHandler2 {
     }
 
 
-    /**
+    /**xml 结束标记时 执行
      * Process notification of the end of an XML element being reached.
      *
      * @param namespaceURI - The Namespace URI, or the empty string if the
@@ -881,7 +881,7 @@ public class Digester extends DefaultHandler2 {
         }
 
         // Fire "body" events for all relevant rules
-        List<Rule> rules = matches.pop();
+        List<Rule> rules = matches.pop();// 推出之前 放入 的 list rule
         if ((rules != null) && (rules.size() > 0)) {
             String bodyText = this.bodyText.toString();
             for (int i = 0; i < rules.size(); i++) {
@@ -911,7 +911,7 @@ public class Digester extends DefaultHandler2 {
         // Recover the body text from the surrounding element
         bodyText = bodyTexts.pop();
 
-        // Fire "end" events for all relevant rules in reverse order
+        // Fire "end" events for all relevant rules in reverse order 倒序执行 相关的规则 的 end 方法
         if (rules != null) {
             for (int i = 0; i < rules.size(); i++) {
                 int j = (rules.size() - i) - 1;
@@ -931,7 +931,7 @@ public class Digester extends DefaultHandler2 {
             }
         }
 
-        // Recover the previous match expression
+        // Recover the previous match expression 恢复之前的 match  ---去除最后一个 "/" 和 之后的字符串
         int slash = match.lastIndexOf('/');
         if (slash >= 0) {
             match = match.substring(0, slash);
@@ -1074,7 +1074,7 @@ public class Digester extends DefaultHandler2 {
         }
 
         if (locator instanceof Locator2) {
-            if (root instanceof DocumentProperties.Charset) {//!=
+            if (root instanceof DocumentProperties.Charset) {//!= // root 为 push() 中赋值，catalina 中为  catalina 对象
                 String enc = ((Locator2) locator).getEncoding();
                 if (enc != null) {
                     try {
@@ -1131,7 +1131,7 @@ public class Digester extends DefaultHandler2 {
 
         // Compute the current matching rule
         StringBuilder sb = new StringBuilder(match);
-        if (match.length() > 0) {
+        if (match.length() > 0) {// 增加'/' endElement 的相关方法中去除
             sb.append('/');
         }
         sb.append(name);
@@ -1142,7 +1142,7 @@ public class Digester extends DefaultHandler2 {
 
         // Fire "begin" events for all relevant rules
         List<Rule> rules = getRules().match(namespaceURI, match);
-        matches.push(rules);
+        matches.push(rules);//推入规则 list，endElement** 方法中获取执行规则的 body end 方法
         if ((rules != null) && (rules.size() > 0)) {
             for (int i = 0; i < rules.size(); i++) {
                 try {
@@ -1664,7 +1664,7 @@ public class Digester extends DefaultHandler2 {
     }
 
 
-    /**
+    /**不删除 获取 栈顶 元素
      * Return the top object on the stack without removing it.  If there are
      * no objects on the stack, return <code>null</code>.
      * @return the top object
@@ -1900,7 +1900,7 @@ public class Digester extends DefaultHandler2 {
     // ------------------------------------------------------- Private Methods
 
 
-   /** 更新原有对象的初始值
+   /**返回一个属性列表，其中包含传入的所有属性，任何格式为“$ {xxx}”的文本在属性值中替换为系统属性的适当值
      * Returns an attributes list which contains all the attributes
      * passed in, with any text of form "${xxx}" in an attribute value
      * replaced by the appropriate value from the system property.

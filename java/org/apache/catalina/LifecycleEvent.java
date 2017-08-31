@@ -18,7 +18,7 @@ package org.apache.catalina;
 
 import java.util.EventObject;
 
-/**
+/**组件 有改变时 通知 监听这
  * General event for notifying listeners of significant changes on a component
  * that implements the Lifecycle interface.
  *
@@ -29,7 +29,7 @@ public final class LifecycleEvent extends EventObject {
     private static final long serialVersionUID = 1L;
 
 
-    /**
+    /** 设定 事件源 ，事件类型 ，数据？
      * Construct a new LifecycleEvent with the specified parameters.
      *
      * @param lifecycle Component on which this event occurred

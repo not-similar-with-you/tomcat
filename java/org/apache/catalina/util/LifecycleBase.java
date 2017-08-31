@@ -111,7 +111,7 @@ public abstract class LifecycleBase implements Lifecycle {
     }
 
 
-    /**
+    /** 允许LifecycleListener 子类 发起 相关的事件
      * Allow sub classes to fire {@link Lifecycle} events.
      *
      * @param type  Event type
@@ -119,7 +119,7 @@ public abstract class LifecycleBase implements Lifecycle {
      */
     protected void fireLifecycleEvent(String type, Object data) {
         LifecycleEvent event = new LifecycleEvent(this, type, data);
-        for (LifecycleListener listener : lifecycleListeners) {
+        for (LifecycleListener listener : lifecycleListeners) {// 调用 为 每个 listener   监听 的事件
             listener.lifecycleEvent(event);
         }
     }
@@ -133,7 +133,7 @@ public abstract class LifecycleBase implements Lifecycle {
 
         try {
             setStateInternal(LifecycleState.INITIALIZING, null, false);
-            initInternal();
+            initInternal();// 调用子类的 实现
             setStateInternal(LifecycleState.INITIALIZED, null, false);
         } catch (Throwable t) {
             handleSubClassException(t, "lifecycleBase.initFail", toString());
@@ -418,10 +418,10 @@ public abstract class LifecycleBase implements Lifecycle {
             }
         }
 
-        this.state = state;
-        String lifecycleEvent = state.getLifecycleEvent();
+        this.state = state;// 更改状态
+        String lifecycleEvent = state.getLifecycleEvent();// 枚举中获取 lifecycleEvent 函数
         if (lifecycleEvent != null) {
-            fireLifecycleEvent(lifecycleEvent, data);
+            fireLifecycleEvent(lifecycleEvent, data);// 激活 监听者 的相关事件
         }
     }
 

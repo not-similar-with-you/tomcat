@@ -99,7 +99,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
      */
     private Map<String,ManagedBean> descriptors = new HashMap<>();
 
-    /** List of managed beans, keyed by class name
+    /** List of managed beans, keyed by class name 用类名作为 key
      */
     private Map<String,ManagedBean> descriptorsByClass = new HashMap<>();
 
@@ -120,7 +120,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
     /**
      */
      public Registry() {
-        super();
+        super();// object 构造方法
     }
 
     // -------------------- Static methods  --------------------
@@ -167,7 +167,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
             registry = new Registry();
         }
         if( registry.guard != null &&
-                registry.guard != guard ) {
+                registry.guard != guard ) {// null
             return null;
         }
         return registry;
@@ -181,7 +181,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
      * @since 1.1
      */
     @Override
-    public void stop() {
+    public void stop() {// 指向新地址对象
         descriptorsByClass = new HashMap<>();
         descriptors = new HashMap<>();
         searchedPaths=new HashMap<>();
@@ -614,7 +614,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
 
         try {
             if( type==null ) {
-                type=bean.getClass().getName();
+                type=bean.getClass().getName();// 类路径 + 类名
             }
 
             ManagedBean managed = findManagedBean(null, bean.getClass(), type);
@@ -718,7 +718,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
 
     // -------------------- Registration  --------------------
 
-    @Override
+    @Override //允许MBean在MBean服务器注册之前执行所需的任何操作
     public ObjectName preRegister(MBeanServer server,
                                   ObjectName name) throws Exception
     {
@@ -734,7 +734,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
     public void preDeregister() throws Exception {
     }
 
-    @Override
+    @Override //允许MBean在MBean服务器中取消注册后执行所需的任何操作。
     public void postDeregister() {
     }
 }

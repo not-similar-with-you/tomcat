@@ -57,29 +57,29 @@ public final class IntrospectionUtils {
         String setter = "set" + capitalize(name);
 
         try {
-            Method methods[] = findMethods(o.getClass());
+            Method methods[] = findMethods(o.getClass());// 获取 o 中 所有的方法
             Method setPropertyMethodVoid = null;
             Method setPropertyMethodBool = null;
 
-            // First, the ideal case - a setFoo( String ) method
+            // First, the ideal case - a setFoo( String ) method 理想的情况 优先调用- setFoo( String ) 方法
             for (int i = 0; i < methods.length; i++) {
                 Class<?> paramT[] = methods[i].getParameterTypes();
                 if (setter.equals(methods[i].getName()) && paramT.length == 1
-                        && "java.lang.String".equals(paramT[0].getName())) {
+                        && "java.lang.String".equals(paramT[0].getName())) {// 方法名于setter 相同  && 参数类型String && 参数为 1个 且
 
-                    methods[i].invoke(o, new Object[] { value });
+                    methods[i].invoke(o, new Object[] { value });// 调用 对应的 set 方法 并返回
                     return true;
                 }
             }
 
-            // Try a setFoo ( int ) or ( boolean )
+            // Try a setFoo ( int ) or ( boolean ) 尝试 setFoo (int )  或者 setFoo（boolean） 方法
             for (int i = 0; i < methods.length; i++) {
                 boolean ok = true;
                 if (setter.equals(methods[i].getName())
-                        && methods[i].getParameterTypes().length == 1) {
+                        && methods[i].getParameterTypes().length == 1) {//方法名称和 setter 相同 && 方法参数为 1 个
 
                     // match - find the type and invoke it
-                    Class<?> paramType = methods[i].getParameterTypes()[0];
+                    Class<?> paramType = methods[i].getParameterTypes()[0];// 获取 参数 类型
                     Object params[] = new Object[1];
 
                     // Try a setFoo ( int )
@@ -122,18 +122,18 @@ public final class IntrospectionUtils {
                                     paramType.getName());
                     }
 
-                    if (ok) {
-                        methods[i].invoke(o, params);
+                    if (ok) {// 正常 情况下
+                        methods[i].invoke(o, params);// 调用对应的 方法 返回
                         return true;
                     }
                 }
 
                 // save "setProperty" for later
                 if ("setProperty".equals(methods[i].getName())) {
-                    if (methods[i].getReturnType()==Boolean.TYPE){
-                        setPropertyMethodBool = methods[i];
+                    if (methods[i].getReturnType()==Boolean.TYPE){// 方法返回类型 为 boolean 类型
+                        setPropertyMethodBool = methods[i]; //  返回类型 boolean 类型
                     }else {
-                        setPropertyMethodVoid = methods[i];
+                        setPropertyMethodVoid = methods[i];// 无 返回类型
                     }
 
                 }
@@ -231,7 +231,7 @@ public final class IntrospectionUtils {
         return null;
     }
 
-    /**
+    /**使用属性值替换$ {NAME}
      * Replace ${NAME} with the property value.
      * @param value The value
      * @param staticProp Replacement properties
@@ -240,16 +240,16 @@ public final class IntrospectionUtils {
      */
     public static String replaceProperties(String value,
             Hashtable<Object,Object> staticProp, PropertySource dynamicProp[]) {
-        if (value.indexOf('$') < 0) {
+        if (value.indexOf('$') < 0) {// 没有 $ 直接返回
             return value;
         }
         StringBuilder sb = new StringBuilder();
         int prev = 0;
         // assert value!=nil
         int pos;
-        while ((pos = value.indexOf('$', prev)) >= 0) {
+        while ((pos = value.indexOf('$', prev)) >= 0) {// value 中存在 $ 获取 $ 位置
             if (pos > 0) {
-                sb.append(value.substring(prev, pos));
+                sb.append(value.substring(prev, pos));// 0 - $ 位置的 str
             }
             if (pos == (value.length() - 1)) {
                 sb.append('$');
@@ -289,7 +289,7 @@ public final class IntrospectionUtils {
         return sb.toString();
     }
 
-    /**
+    /** 转换了name 的首字母 为 大写
      * Reverse of Introspector.decapitalize.
      * @param name The name
      * @return the capitalized string
@@ -310,13 +310,18 @@ public final class IntrospectionUtils {
 
     private static final Hashtable<Class<?>,Method[]> objectMethods = new Hashtable<>();
 
+    /**
+     * 获取 c 中所有的方法
+     * @param c
+     * @return
+     */
     public static Method[] findMethods(Class<?> c) {
         Method methods[] = objectMethods.get(c);
         if (methods != null)
             return methods;
 
-        methods = c.getMethods();
-        objectMethods.put(c, methods);
+        methods = c.getMethods();// 获取传入对象 中 所有的方法
+        objectMethods.put(c, methods);// 放入 hashmap 中
         return methods;
     }
 

@@ -270,9 +270,10 @@ public class Catalina {
     protected Digester createStartDigester() {
         long t1=System.currentTimeMillis();
         // Initialize the digester
-        Digester digester = new Digester();
+        Digester digester = new Digester();// 加载静态块，构造方法
         digester.setValidating(false);// 设置为false表示解析xml时不需要进行DTD的规则校验
         digester.setRulesValidation(true); // 是否进行节点设置规则校验,如果xml中相应节点没有设置解析规则会在控制台显示提示信息
+        // 将xml节点中的className作为假属性，不必调用默认的setter方法（一般的节点属性在解析时将会以属性值作为入参调用该节点相应对象的setter方法，而className属性的作用是提示解析器用该属性的值来实例化对象）
         Map<Class<?>, List<String>> fakeAttributes = new HashMap<>();
         List<String> attrs = new ArrayList<>();
         attrs.add("className");
@@ -526,9 +527,9 @@ public class Catalina {
                 if (log.isDebugEnabled()) {
                     log.debug(sm.getString("catalina.configFail", file), e);
                 }
-            }
+            }// 读取文件 失败
             if (inputStream == null) {
-                try {
+                try {//获取当前类的加载器，将资源文件加载为流
                     inputStream = getClass().getClassLoader()
                         .getResourceAsStream(getConfigFile());
                     inputSource = new InputSource
@@ -560,7 +561,7 @@ public class Catalina {
             }
 
 
-            if (inputStream == null || inputSource == null) {
+            if (inputStream == null || inputSource == null) {// 输出加载文件失败信息，返回
                 if  (file == null) {
                     log.warn(sm.getString("catalina.configFail",
                             getConfigFile() + "] or [server-embed.xml]"));
@@ -597,7 +598,7 @@ public class Catalina {
         }
 
         getServer().setCatalina(this);
-        getServer().setCatalinaHome(Bootstrap.getCatalinaHomeFile());
+        getServer().setCatalinaHome(Bootstrap.getCatalinaHomeFile());// tomcat 路径
         getServer().setCatalinaBase(Bootstrap.getCatalinaBaseFile());
 
         // Stream redirection

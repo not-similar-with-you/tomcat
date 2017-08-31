@@ -899,7 +899,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
     private ObjectName onameStringCache;
     private ObjectName onameMBeanFactory;
 
-    /**
+    /** 为 当前 server 对象 获取 MBean domain 使用已下 查找 顺序：
      * Obtain the MBean domain for this server. The domain is obtained using
      * the following search order:
      * <ol>
@@ -912,7 +912,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
 
         String domain = null;
 
-        Service[] services = findServices();
+        Service[] services = findServices();// 找打 service 实例
         if (services.length > 0) {
             Service service = services[0];
             if (service != null) {

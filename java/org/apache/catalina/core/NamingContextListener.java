@@ -211,12 +211,12 @@ public class NamingContextListener
     @Override
     public void lifecycleEvent(LifecycleEvent event) {
 
-        container = event.getLifecycle();
+        container = event.getLifecycle();// 获取事件源
 
         if (container instanceof Context) {
             namingResources = ((Context) container).getNamingResources();
             token = ((Context) container).getNamingToken();
-        } else if (container instanceof Server) {
+        } else if (container instanceof Server) {// 获取 server 中 globalNamingResources
             namingResources = ((Server) container).getGlobalNamingResources();
             token = ((Server) container).getNamingToken();
         } else {

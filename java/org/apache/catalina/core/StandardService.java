@@ -592,7 +592,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
 
         // Use the engine name first
         if (engine != null) {
-            domain = engine.getName();
+            domain = engine.getName();// engine 的 配置的 名称 catalina
         }
 
         // No engine or no engine name, use the service name

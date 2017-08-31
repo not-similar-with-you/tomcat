@@ -79,7 +79,7 @@ public class VersionLoggerListener implements LifecycleListener {
 
     @Override
     public void lifecycleEvent(LifecycleEvent event) {
-        if (Lifecycle.BEFORE_INIT_EVENT.equals(event.getType())) {
+        if (Lifecycle.BEFORE_INIT_EVENT.equals(event.getType())) {// 初始化时调用 server 1
             log();
         }
     }

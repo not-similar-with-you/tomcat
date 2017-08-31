@@ -115,7 +115,7 @@ public class ObjectCreateRule extends Rule {
         // Instantiate the new object and push it on the context stack
         Class<?> clazz = digester.getClassLoader().loadClass(realClassName);
         Object instance = clazz.newInstance();
-        digester.push(instance);
+        digester.push(instance);// 实例 推入 栈
     }
 
 

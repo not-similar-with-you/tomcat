@@ -194,7 +194,7 @@ public class RulesBase implements Rules {
 
         // List rulesList = (List) this.cache.get(pattern);
         List<Rule> rulesList = lookup(namespaceURI, pattern);
-        if ((rulesList == null) || (rulesList.size() < 1)) {
+        if ((rulesList == null) || (rulesList.size() < 1)) {// 无规则，或 size < 1
             // Find the longest key, ie more discriminant
             String longKey = "";
             for (String key : this.cache.keySet()) {
@@ -210,7 +210,7 @@ public class RulesBase implements Rules {
                 }
             }
         }
-        if (rulesList == null) {
+        if (rulesList == null) {// 返回 空 list
             rulesList = new ArrayList<>();
         }
         return rulesList;
@@ -233,7 +233,7 @@ public class RulesBase implements Rules {
     // ------------------------------------------------------ Protected Methods
 
 
-    /**
+    /**匹配 rule 和 namespaceURI（如果存在）。没有对应规则list 返回 null 。
      * Return a List of Rule instances for the specified pattern that also
      * match the specified namespace URI (if any).  If there are no such
      * rules, return <code>null</code>.
