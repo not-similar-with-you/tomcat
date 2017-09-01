@@ -53,7 +53,7 @@ import org.apache.tomcat.util.modeler.modules.ModelerSource;
     checks in the mbean server ?
 */
 
-/**
+/** GlobalResourcesLifecycleListener  ObjectCreateRule 中 作为静态变量在 MBeanUtils 中静态 方法中 调用self 静态getRegistry() 创建
  * Registry for modeler MBeans.
  *
  * This is the main entry point into modeler. It provides methods to create
@@ -102,7 +102,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
     /** List of managed beans, keyed by class name 用类名作为 key
      */
     private Map<String,ManagedBean> descriptorsByClass = new HashMap<>();
-
+    /** 避免重复查找 或 加载 descriptors **/
     // map to avoid duplicated searching or loading descriptors
     private Map<String,URL> searchedPaths = new HashMap<>();
 
@@ -163,7 +163,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
         }
 
         // static
-        if (registry == null) {
+        if (registry == null) {// 调用静态方法时初始对象
             registry = new Registry();
         }
         if( registry.guard != null &&
@@ -559,7 +559,7 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
             location=url.toString();
             type=param;
             inputsource=url.openStream();
-            if (sourceType == null && location.endsWith(".xml")) {
+            if (sourceType == null && location.endsWith(".xml")) {// sourceType 为 null && source 为 xml 文件
                 sourceType = "MbeansDescriptorsDigesterSource";
             }
         } else if( source instanceof File ) {
@@ -644,18 +644,18 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
      * @param classLoader The class loader
      */
     public void loadDescriptors( String packageName, ClassLoader classLoader  ) {
-        String res=packageName.replace( '.', '/');
+        String res=packageName.replace( '.', '/');// / 代替字符串中的 .
 
         if( log.isTraceEnabled() ) {
             log.trace("Finding descriptor " + res );
         }
 
-        if( searchedPaths.get( packageName ) != null ) {
+        if( searchedPaths.get( packageName ) != null ) {// 是否处理过相关的 packageName，找到，return
             return;
         }
 
         String descriptors = res + "/mbeans-descriptors.xml";
-        URL dURL = classLoader.getResource( descriptors );
+        URL dURL = classLoader.getResource( descriptors );// 获取资源链接
 
         if (dURL == null) {
             return;
@@ -701,15 +701,15 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
             loadDescriptors(pkg, classLoader);
         }
     }
-
+    /** 加载 ，实例化 ，获取 modelerSource 的 子类 **/
     private ModelerSource getModelerSource( String type )
             throws Exception
     {
         if( type==null ) type="MbeansDescriptorsDigesterSource";
-        if(!type.contains(".")) {
+        if(!type.contains(".")) {// 当前 子类 字符串 不是 类的全限定名
             type="org.apache.tomcat.util.modeler.modules." + type;
         }
-
+        // 加载子类 ， 并 实例化 1 个对象
         Class<?> c = Class.forName(type);
         ModelerSource ds=(ModelerSource)c.newInstance();
         return ds;

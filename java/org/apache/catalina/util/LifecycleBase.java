@@ -134,7 +134,7 @@ public abstract class LifecycleBase implements Lifecycle {
         try {
             setStateInternal(LifecycleState.INITIALIZING, null, false);
             initInternal();// 调用子类的 实现
-            setStateInternal(LifecycleState.INITIALIZED, null, false);
+            setStateInternal(LifecycleState.INITIALIZED, null, false);// 未触发 监听者事件
         } catch (Throwable t) {
             handleSubClassException(t, "lifecycleBase.initFail", toString());
         }

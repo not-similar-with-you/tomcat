@@ -55,23 +55,23 @@ public class MbeansDescriptorsDigesterSource extends ModelerSource
         // Configure the parsing rules
         digester.addObjectCreate
             ("mbeans-descriptors/mbean",
-            "org.apache.tomcat.util.modeler.ManagedBean");
+            "org.apache.tomcat.util.modeler.ManagedBean");//在碰到xml文件的mbeans-descriptors节点的子节点mbean时构造一个org.apache.tomcat.util.modeler.ManagedBean对象
         digester.addSetProperties
-            ("mbeans-descriptors/mbean");
+            ("mbeans-descriptors/mbean");//读取该节点属性值填充到ManagedBean对象的pojo属性中
         digester.addSetNext
             ("mbeans-descriptors/mbean",
                 "add",
-            "java.lang.Object");
+            "java.lang.Object");//以ManagedBean对象为入参调用push() 的loadedMbeans对象的add方法。
 
         digester.addObjectCreate
             ("mbeans-descriptors/mbean/attribute",
-            "org.apache.tomcat.util.modeler.AttributeInfo");
+            "org.apache.tomcat.util.modeler.AttributeInfo");//在碰到mbeans-descriptors/mbean/attribute节点时构造org.apache.tomcat.util.modeler.AttributeInfo对象
         digester.addSetProperties
-            ("mbeans-descriptors/mbean/attribute");
+            ("mbeans-descriptors/mbean/attribute");//填充pojo属性
         digester.addSetNext
             ("mbeans-descriptors/mbean/attribute",
                 "addAttribute",
-            "org.apache.tomcat.util.modeler.AttributeInfo");
+            "org.apache.tomcat.util.modeler.AttributeInfo");//并调用父节点构造的对象（即ManagedBean对象）的addAttribute方法
 
         digester.addObjectCreate
             ("mbeans-descriptors/mbean/notification",
@@ -139,22 +139,22 @@ public class MbeansDescriptorsDigesterSource extends ModelerSource
     public void setSource( Object source ) {
         this.source=source;
     }
-
+    /**读取xml 配置文件 ，设置registry descriptors descriptorsByClass 返回初始值 ArrayList **/
     @Override
     public List<ObjectName> loadDescriptors( Registry registry, String type,
             Object source) throws Exception {
         setRegistry(registry);
-        setSource(source);
+        setSource(source);// Registry 传入 inputsource 类型
         execute();
-        return mbeans;
+        return mbeans;// 返回 初始 值
     }
 
     public void execute() throws Exception {
-        if (registry == null) {
+        if (registry == null) {// null 判断
             registry = Registry.getRegistry(null, null);
         }
 
-        InputStream stream = (InputStream) source;
+        InputStream stream = (InputStream) source;// 转型
 
         List<ManagedBean> loadedMbeans = new ArrayList<>();
         synchronized(dLock) {
