@@ -701,7 +701,11 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
             loadDescriptors(pkg, classLoader);
         }
     }
-    /** 加载 ，实例化 ，获取 modelerSource 的 子类 **/
+    /**
+     * 加载 ，实例化 ，获取 modelerSource 的 子类
+     *  默认MbeansDescriptorsDigesterSource
+     *
+     **/
     private ModelerSource getModelerSource( String type )
             throws Exception
     {

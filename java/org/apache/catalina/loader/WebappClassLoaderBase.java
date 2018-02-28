@@ -1141,7 +1141,7 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
             // Log access to stopped class loader
             checkStateForClassLoading(name);
 
-            // (0) Check our previously loaded local class cache
+            // (0) Check our previously loaded local class cache  // (0) 检查WebappClassLoader之前是否已经load过这个资源
             clazz = findLoadedClass0(name);
             if (clazz != null) {
                 if (log.isDebugEnabled())
@@ -1151,7 +1151,7 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
                 return clazz;
             }
 
-            // (0.1) Check our previously loaded class cache
+            // (0.1) Check our previously loaded class cache  // (0.1) 检查ClassLoader之前是否已经load过
             clazz = findLoadedClass(name);
             if (clazz != null) {
                 if (log.isDebugEnabled())
@@ -1164,6 +1164,8 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
             // (0.2) Try loading the class with the system class loader, to prevent
             //       the webapp from overriding Java SE classes. This implements
             //       SRV.10.7.2
+
+            // (0.2) 先检查系统ClassLoader，因此WEB-INF/lib和WEB-INF/classes或{tomcat}/libs下的类定义不能覆盖JVM 底层能够查找到的定义(譬如不能通过定义java.lang.Integer替代底层的实现
             String resourceName = binaryNameToPath(name, false);
 
             ClassLoader javaseLoader = getJavaseClassLoader();
@@ -1211,13 +1213,16 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
                 }
             }
 
+            //这是一个很奇怪的定义，JVM的ClassLoader建议先由parent去load，load不到自己再去load(见如上 ClassLoader部分)，
+            // 而Servelet规范的建议则恰好相反，Tomcat的实现则做个折中，由用户去决定(context的 delegate定义)，默认使用Servlet规范的建议，即delegate=false
             boolean delegateLoad = delegate || filter(name, true);
 
-            // (1) Delegate to our parent if requested
+            // (1) Delegate to our parent if requested  // (1) 先由parent去尝试加载，此处的parent是SharedClassLoader，见如上说明，如上说明，除非设置了delegate，否则这里不执行
             if (delegateLoad) {
                 if (log.isDebugEnabled())
                     log.debug("  Delegating to parent classloader1 " + parent);
                 try {
+                    //此处parent是否为空取决于context 的privileged属性配置，默认privileged=true，即parent为SharedClassLoader
                     clazz = Class.forName(name, false, parent);
                     if (clazz != null) {
                         if (log.isDebugEnabled())
@@ -1231,7 +1236,7 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
                 }
             }
 
-            // (2) Search local repositories
+            // (2) Search local repositories  // (2) 到WEB-INF/lib和WEB-INF/classes目录去搜索，细节部分可以再看一下findClass，会发现默认是先搜索WEB-INF/classes后搜索WEB-INF/lib
             if (log.isDebugEnabled())
                 log.debug("  Searching local repositories");
             try {
@@ -1247,7 +1252,7 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
                 // Ignore
             }
 
-            // (3) Delegate to parent unconditionally
+            // (3) Delegate to parent unconditionally  // (3) 由parent再去尝试加载一下
             if (!delegateLoad) {
                 if (log.isDebugEnabled())
                     log.debug("  Delegating to parent classloader at end: " + parent);

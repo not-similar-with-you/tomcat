@@ -866,11 +866,11 @@ public final class Mapper {
         int servletPath = pathOffset + length;
         path.setOffset(servletPath);
 
-        // Rule 1 -- Exact Match
+        // Rule 1 -- Exact Match 精确匹配，使用contextVersion的exactWrappers
         MappedWrapper[] exactWrappers = contextVersion.exactWrappers;
         internalMapExactWrapper(exactWrappers, path, mappingData);
 
-        // Rule 2 -- Prefix Match
+        // Rule 2 -- Prefix Match 前缀匹配，使用contextVersion的wildcardWrappers
         boolean checkJspWelcomeFiles = false;
         MappedWrapper[] wildcardWrappers = contextVersion.wildcardWrappers;
         if (mappingData.wrapper == null) {
@@ -909,7 +909,7 @@ public final class Mapper {
             return;
         }
 
-        // Rule 3 -- Extension Match
+        // Rule 3 -- Extension Match 扩展名匹配，使用contextVersion的extensionWrappers
         MappedWrapper[] extensionWrappers = contextVersion.extensionWrappers;
         if (mappingData.wrapper == null && !checkJspWelcomeFiles) {
             internalMapExtensionWrapper(extensionWrappers, path, mappingData,
@@ -917,6 +917,7 @@ public final class Mapper {
         }
 
         // Rule 4 -- Welcome resources processing for servlets
+        // 使用资源文件来处理servlet，使用contextVersion的welcomeResources属性，这个属性是个字符串数组
         if (mappingData.wrapper == null) {
             boolean checkWelcomeFiles = checkJspWelcomeFiles;
             if (!checkWelcomeFiles) {
@@ -1007,6 +1008,7 @@ public final class Mapper {
 
 
         // Rule 7 -- Default servlet
+        // 使用默认的servlet，使用contextVersion的defaultWrapper
         if (mappingData.wrapper == null && !checkJspWelcomeFiles) {
             if (contextVersion.defaultWrapper != null) {
                 mappingData.wrapper = contextVersion.defaultWrapper.object;

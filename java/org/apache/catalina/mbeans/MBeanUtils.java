@@ -540,7 +540,7 @@ public class MBeanUtils {
     public static synchronized Registry createRegistry() {
         if (registry == null) {
             registry = Registry.getRegistry(null, null);
-            ClassLoader cl = MBeanUtils.class.getClassLoader();
+            ClassLoader cl = MBeanUtils.class.getClassLoader();//AppClassLoader
 
             registry.loadDescriptors("org.apache.catalina.mbeans",  cl);
             registry.loadDescriptors("org.apache.catalina.authenticator", cl);
